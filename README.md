@@ -19,7 +19,7 @@ The following tools are used:
 	•	rete-area-plugin: For managing the workspace (zoom, pan, etc.).
 ```
 
-### Main App with workflow support
+### How to run the app
 ```
 python3 -m venv env
 source env/bin/activate
@@ -48,10 +48,8 @@ Optionally you can run
 ```
 python app2.py
 ```
-python app2.py
-```
 
-Commands:
+Main app Commands:
 ```
 Added new node types:
 
