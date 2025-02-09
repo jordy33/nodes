@@ -9,8 +9,8 @@ The following tools are used:
 - json
 - rete.js
 
-``` 
-Tools to create a node-based editor using:
+## The UI Tools to create a node-based editor:
+```
 	1.	Vue.js as the frontend framework.
 	2.	Rete.js as the core library for defining and managing the node editor.
 	3.	Plugins:
