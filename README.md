@@ -20,12 +20,18 @@ The following tools are used:
 ```
 
 ### Main App with workflow support
-run main.py
-
+```
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+python main.py
+```
 ### Basic Example 1
 
-Run app1.py
-
+Optionally you can run
+```
+python app1.py
+```
 Commands:
 ```
 When you run the app1 you should be able to:
@@ -38,8 +44,12 @@ Input values and see them update in real-time
 ```
 
 ### Basic Example 2
-
-Run app2.py
+Optionally you can run
+```
+python app2.py
+```
+python app2.py
+```
 
 Commands:
 ```
