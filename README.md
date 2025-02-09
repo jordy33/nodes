@@ -1,9 +1,16 @@
 # Nodes example in flask
 
 ## Overview
-Summary of What This Setup Does:
-```
-This setup is importing the necessary tools to create a node-based editor using:
+This app create a node editor that can be used to create workflows. 
+The following tools are used:
+- flask
+- numpy
+- mysql-connector-python
+- json
+- rete.js
+
+``` 
+Tools to create a node-based editor using:
 	1.	Vue.js as the frontend framework.
 	2.	Rete.js as the core library for defining and managing the node editor.
 	3.	Plugins:
