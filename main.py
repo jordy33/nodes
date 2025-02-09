@@ -120,7 +120,7 @@ class NodeOperations:
 # Main route to render the node editor
 @app.route('/')
 def index():
-    return render_template('node_editor2.html')
+    return render_template('node_editor.html')
 
 # API endpoint to process node operations
 @app.route('/process_node', methods=['POST'])
