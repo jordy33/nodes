@@ -110,11 +110,15 @@
 <body>
     <div id="node-editor"></div>
     <div class="toolbar">
-        <button onclick="addNode('number')">Number</button>
-        <button onclick="addNode('square')">Square</button>
-        <button onclick="addNode('add')">Add</button>
-        <button onclick="addNode('multiply')">Multiply</button>
+        <button onclick="addNode('Number')">Number</button>
+        <button onclick="addNode('Square')">Square</button>
+        <button onclick="addNode('Add')">Add</button>
+        <button onclick="addNode('Multiply')">Multiply</button>
         <button onclick="clearEditor()">Clear All</button>
+        <input type="text" id="workflowName" placeholder="Workflow name" style="margin: 4px; padding: 6px">
+        <button onclick="saveWorkflow()">Save</button>
+        <button onclick="loadWorkflowPrompt()">Load</button>
+        <div id="workflowList" style="color: white; margin-top: 10px"></div>
     </div>
     <div id="notification" class="notification"></div>
     
@@ -122,7 +126,6 @@
         let editor;
         let engine;
 
-        // Notification system
         function showNotification(message, duration = 3000) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -233,7 +236,6 @@
             }
         }
 
-        // Initialize editor
         window.addEventListener('load', async () => {
             const container = document.querySelector('#node-editor');
             editor = new Rete.NodeEditor('demo@0.1.0', container);
@@ -242,26 +244,23 @@
             editor.use(ConnectionPlugin.default);
             editor.use(VueRenderPlugin.default);
 
-            // Register components
-            const components = {
-                'number': new NumberComponent(),
-                'square': new SquareComponent(),
-                'add': new AddComponent(),
-                'multiply': new MultiplyComponent()
-            };
+            const components = [
+                new NumberComponent(),
+                new SquareComponent(),
+                new AddComponent(),
+                new MultiplyComponent()
+            ];
 
-            Object.values(components).forEach(c => {
+            components.forEach(c => {
                 editor.register(c);
                 engine.register(c);
             });
 
-            // Handle processing
             editor.on(['process', 'nodecreated', 'noderemoved', 'connectioncreated', 'connectionremoved'], async () => {
                 await engine.abort();
                 await engine.process(editor.toJSON());
             });
 
-            // Enable node deletion with Delete key
             document.addEventListener('keydown', async (e) => {
                 if (e.key === 'Delete') {
                     const selected = editor.selected;
@@ -276,20 +275,18 @@
             showNotification('Editor ready! Right-click or use toolbar to add nodes');
         });
 
-        // Node creation function for toolbar
         async function addNode(type) {
             try {
                 const component = editor.components.get(type);
                 const node = await component.createNode();
                 node.position = [Math.random() * 300 + 50, Math.random() * 300 + 50];
                 await editor.addNode(node);
-                showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} node added`);
+                showNotification(`${type} node added`);
             } catch (err) {
                 showNotification('Error creating node: ' + err.message);
             }
         }
 
-        // Clear editor function
         async function clearEditor() {
             if (confirm('Are you sure you want to clear the editor?')) {
                 editor.clear();
@@ -297,8 +294,80 @@
             }
         }
 
-        // Socket type
         const numSocket = new Rete.Socket('Number');
+        async function saveWorkflow() {
+            const name = document.getElementById('workflowName').value;
+            if (!name) return showNotification('Please enter a workflow name');
+            
+            try {
+                const response = await fetch('/save_workflow', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        data: editor.toJSON()
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification(`Workflow saved (ID: ${result.id})`);
+                    updateWorkflowList();
+                } else {
+                    showNotification('Save failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (err) {
+                showNotification('Error saving workflow: ' + err.message);
+            }
+        }
+
+        async function loadWorkflowPrompt() {
+            const id = prompt('Enter workflow ID to load:');
+            if (!id) return;
+            await loadWorkflow(id);
+        }
+
+        async function loadWorkflow(id) {
+            try {
+                const response = await fetch(`/load_workflow/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    editor.clear();
+                    await editor.fromJSON(result.data);
+                    showNotification(`Workflow ${id} loaded`);
+                } else {
+                    showNotification('Load failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (err) {
+                showNotification('Error loading workflow: ' + err.message);
+            }
+        }
+
+        async function updateWorkflowList() {
+            try {
+                const response = await fetch('/list_workflows');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const list = result.workflows.map(w => 
+                        `<div style="padding: 5px; cursor: pointer" onclick="loadWorkflow(${w.id})">
+                            ${w.id}: ${w.name} (${new Date(w.updated_at).toLocaleDateString()})
+                        </div>`
+                    ).join('');
+                    
+                    document.getElementById('workflowList').innerHTML = list || 'No workflows saved';
+                }
+            } catch (err) {
+                showNotification('Error fetching workflow list: ' + err.message);
+            }
+        }
+
+        // Initialize workflow list on load
+        window.addEventListener('load', () => {
+            updateWorkflowList();
+            setInterval(updateWorkflowList, 30000); // Update every 30 seconds
+        });
     </script>
 </body>
 </html>

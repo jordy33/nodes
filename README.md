@@ -1,6 +1,9 @@
 # Nodes example in flask
 
-### Example 1
+### Main App with workflow support
+run main.py
+
+### Basic Example 1
 
 Run app1.py
 
@@ -15,7 +18,7 @@ Connect nodes together
 Input values and see them update in real-time
 ```
 
-### Exmple 2
+### Basic Example 2
 
 Run app2.py
 
