@@ -2,7 +2,7 @@
 
 ## Overview
 Summary of What This Setup Does:
-
+```
 This setup is importing the necessary tools to create a node-based editor using:
 	1.	Vue.js as the frontend framework.
 	2.	Rete.js as the core library for defining and managing the node editor.
@@ -10,7 +10,7 @@ This setup is importing the necessary tools to create a node-based editor using:
 	•	rete-vue-render-plugin: For rendering nodes with Vue.js.
 	•	rete-connection-plugin: For creating connections between nodes.
 	•	rete-area-plugin: For managing the workspace (zoom, pan, etc.).
-
+```
 
 ### Main App with workflow support
 run main.py
